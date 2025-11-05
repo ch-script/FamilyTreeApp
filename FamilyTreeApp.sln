@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTreeApp.Core", "FamilyTreeApp.Core\FamilyTreeApp.Core.csproj", "{9DFDC767-877A-4899-AF50-AE077E3D002B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTreeApp.UI", "FamilyTreeApp.UI\FamilyTreeApp.UI.csproj", "{87123595-A996-4029-8DDE-7A9B7AE71FCD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9DFDC767-877A-4899-AF50-AE077E3D002B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DFDC767-877A-4899-AF50-AE077E3D002B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DFDC767-877A-4899-AF50-AE077E3D002B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFDC767-877A-4899-AF50-AE077E3D002B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87123595-A996-4029-8DDE-7A9B7AE71FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87123595-A996-4029-8DDE-7A9B7AE71FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87123595-A996-4029-8DDE-7A9B7AE71FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87123595-A996-4029-8DDE-7A9B7AE71FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5B1329E4-F67A-4A36-8DB1-2B8F600C7422}
+	EndGlobalSection
+EndGlobal
