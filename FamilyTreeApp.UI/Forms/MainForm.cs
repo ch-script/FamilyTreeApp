@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WMPLib;
 using FamilyTreeApp.Core.Services;
 using FamilyTreeApp.Core.Models;
+using System.Diagnostics;
 
 namespace FamilyTreeApp.UI.Forms
 {
@@ -39,11 +40,23 @@ namespace FamilyTreeApp.UI.Forms
 
 
             // Musicaa
-            var player = new WindowsMediaPlayer();
-            player.URL = @"C:\Users\kzxre\source\repos\FamilyTreeApp\Resources\Musica\Notes Aeriennes - HOYO-MiX.mp3";
-            player.settings.volume = 05;
-            player.settings.autoStart = true;
-            player.settings.setMode("loop", true);
+
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Notes Aeriennes - HOYO-MiX.mp3");
+
+            // Verifica si el archivo existe
+            if (File.Exists(filePath))
+            {
+                var player = new WindowsMediaPlayer();
+                player.URL = filePath; 
+                player.settings.volume = 10;
+                player.settings.autoStart = true;
+                player.settings.setMode("loop", true);
+                Debug.WriteLine("Reproduciendo: " + filePath);
+            }
+            else
+            {
+                Debug.WriteLine("El archivo de musica no se encontró, es posible que falte colocarle las propiedades de recurso incrustado...");
+            }
 
             this.ResumeLayout(false);
         }
