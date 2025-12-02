@@ -17,6 +17,7 @@ namespace FamilyTreeApp.UI.Forms
         private Button btnAddPerson;
         private Button btnViewMap;
         private Button btnStatistics;
+        private Button btnViewTree;
         private ListBox lstMembers;
         private Panel pnlDetails;
         private Label lblMemberCount;
@@ -112,6 +113,21 @@ namespace FamilyTreeApp.UI.Forms
             btnStatistics.FlatAppearance.BorderSize = 0;
             btnStatistics.Click += BtnStatistics_Click;
 
+            btnViewTree = new Button
+            {
+                Text = "Ver arbol",
+                Location = new Point(430, 15),
+                Size = new Size(130, 35),
+                BackColor = Color.FromArgb(0, 120, 215),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnViewTree.FlatAppearance.BorderSize = 0;
+            btnViewTree.Click += BtnViewTree_Click;
+
+            topPanel.Controls.Add(btnViewTree);
+
             // muestra camtodad de miembros es uin label
             lblMemberCount = new Label
             {
@@ -202,6 +218,21 @@ namespace FamilyTreeApp.UI.Forms
             var statsForm = new StatisticsForm(familyService);
             statsForm.ShowDialog();
         }
+
+        // muestra el treeview
+        private void BtnViewTree_Click(object sender, EventArgs e)
+        {
+            if (familyService.GetMemberCount() == 0)
+            {
+                MessageBox.Show("Agregue aunque sea un miembro antes de ver el arbol",
+                    "Arbol vacio", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var treeForm = new TreeDiagramForm(familyService);
+            treeForm.ShowDialog();
+        }
+
 
         private void UpdateMemberList() // Actualiza la lista de miembros
         {
