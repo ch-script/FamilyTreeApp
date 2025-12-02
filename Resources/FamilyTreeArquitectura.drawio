@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0" version="29.1.1">
+  <diagram name="Página-1" id="J6neyYK6akDXP3tQDhGW">
+    <mxGraphModel dx="2800" dy="968" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-1" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="690" width="600" x="-713" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-5" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="170" width="200" x="-643" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=top;rounded=0;fontSize=16;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 51, 153));&quot;&gt;Capa UI&lt;/font&gt;&lt;div&gt;(Conexión con el usuario,&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;WinForms y WebView2)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="140" x="-599" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-8" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="300" width="529.6296296296296" x="-663" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-10" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="150" width="193.5185185185185" x="-613.0040740740741" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-11" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="150" width="193.5185185185185" x="-337.54851851851845" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-6" parent="1" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=20;" value="" vertex="1">
+          <mxGeometry height="170" width="200" x="-353" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=top;rounded=0;fontSize=16;" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(51, 153, 255));&quot;&gt;Capa de datos&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(Archivos c#, almacenamiento datos del programa y del usuario)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="165.19" x="-323.3800000000001" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-22" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <mxPoint x="-273" y="600" as="sourcePoint" />
+            <mxPoint x="-273" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-25" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="-572.62" y="520" as="sourcePoint" />
+            <mxPoint x="-573" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;fontSize=20;fontStyle=1" value="&lt;font style=&quot;font-size: 22px;&quot;&gt;FamilyTreeApp&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="440" x="-653" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=top;rounded=0;fontSize=16;" value="&lt;div style=&quot;&quot;&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 153, 51));&quot;&gt;Núcleo del programa[Core]&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(Clases, lógica del árbol, servicios)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="480" x="-638.19" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-32" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=top;rounded=0;fontSize=16;" value="&lt;span&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(102, 255, 179));&quot;&gt;Models&lt;/font&gt;&lt;/span&gt;&lt;div&gt;(Clasificación de datos, clase&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Person y Family Tree)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="105" width="143.24" x="-576.24" y="742.5" as="geometry" />
+        </mxCell>
+        <mxCell id="kGsGt_D7qVm2Cew_ctSk-33" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=top;rounded=0;fontSize=16;" value="&lt;span&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(178, 102, 255));&quot;&gt;FamilyTreeService&lt;/font&gt;&lt;/span&gt;&lt;div&gt;(&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Lógica de datos almacenados, manejo de modelos)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="147.69" x="-301.1600000000001" y="750" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
