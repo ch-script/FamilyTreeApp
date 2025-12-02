@@ -25,9 +25,11 @@ namespace FamilyTreeApp.UI.Forms
         private TextBox txtPhotoPath;
         private ComboBox cmbFather;
         private ComboBox cmbMother;
+        private ComboBox cmbSpouse; 
         private Button btnSave;
         private Button btnCancel;
         private Button btnBrowsePhoto;
+
 
         public AddPersonForm(FamilyTreeService service)
         {
@@ -40,7 +42,7 @@ namespace FamilyTreeApp.UI.Forms
         {
             this.SuspendLayout();
 
-            this.ClientSize = new Size(500, 650);
+            this.ClientSize = new Size(500, 700);
             this.Text = "Agregar Persona";
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -216,6 +218,17 @@ namespace FamilyTreeApp.UI.Forms
             this.Controls.Add(cmbMother);
             yPos += spacing;
 
+            ////////////////////////////////////////////////////
+            ///// Pareja
+            AddLabel("Pareja:", 20, yPos, labelWidth);
+            cmbSpouse = new ComboBox
+            {
+                Location = new Point(150, yPos),
+                Size = new Size(controlWidth, 25),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            this.Controls.Add(cmbSpouse);
+            yPos += spacing;
 
 
             ///////////////////////////////////////////////////
@@ -266,8 +279,11 @@ namespace FamilyTreeApp.UI.Forms
         private void LoadParentOptions()
         {
             cmbFather.Items.Clear();
-            cmbMother.Items.Clear();
-
+            cmbMother.Items.Clear(); 
+            cmbSpouse.Items.Clear();
+            
+            
+            cmbSpouse.Items.Add(new ComboBoxItem { Text = "Ninguno", Value = null });
             cmbFather.Items.Add(new ComboBoxItem { Text = "Ninguno", Value = null });
             cmbMother.Items.Add(new ComboBoxItem { Text = "Ninguno", Value = null });
 
@@ -281,12 +297,16 @@ namespace FamilyTreeApp.UI.Forms
                 };
                 cmbFather.Items.Add(item);
                 cmbMother.Items.Add(item);
+                cmbSpouse.Items.Add(item);
             }
 
             cmbFather.SelectedIndex = 0;
             cmbMother.SelectedIndex = 0;
+            cmbSpouse.SelectedIndex = 0;
+            cmbSpouse.DisplayMember = "Text";
             cmbFather.DisplayMember = "Text";
             cmbMother.DisplayMember = "Text";
+
         }
 
         // Calcula la edad
@@ -352,12 +372,17 @@ namespace FamilyTreeApp.UI.Forms
 
                 string fatherId = (cmbFather.SelectedItem as ComboBoxItem)?.Value;
                 string motherId = (cmbMother.SelectedItem as ComboBoxItem)?.Value;
+                string spouseId = (cmbSpouse.SelectedItem as ComboBoxItem)?.Value;
 
                 if (familyService.AddPerson(person, fatherId, motherId))
                 {
-                    MessageBox.Show("Persona agregada exitosamente","Exito",MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    // Establecer matrimonio si hay pareja
+                    if (!string.IsNullOrEmpty(spouseId))
+                    {
+                        familyService.SetMarriage(person.Id, spouseId);
+                    }
+
+                    MessageBox.Show("Persona agregada exitosamente", "Exito",MessageBoxButtons.OK, MessageBoxIcon.Information);this.DialogResult = DialogResult.OK;this.Close();
                 }
                 else
                 {

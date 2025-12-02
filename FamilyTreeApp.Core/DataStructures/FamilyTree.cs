@@ -93,6 +93,171 @@ namespace FamilyTreeApp.Core.DataStructures // arbol genealogico de una familia
             return parents;
         }
 
+        // ADD: ESTABLERZCO NUEVAS RELACIONES FAMILIARES
+
+        // Muestra a los hermanos
+        public List<Person> GetSiblings(string personId)
+        {
+            if (!members.ContainsKey(personId))
+                return new List<Person>();
+
+            var person = members[personId];
+            var siblings = new List<Person>();
+
+            if (!string.IsNullOrEmpty(person.FatherId)) // por padre
+            {
+                var father = GetPerson(person.FatherId);
+                if (father != null)
+                {
+                    foreach (var childId in father.ChildrenIds)
+                    {
+                        if (childId != personId && members.ContainsKey(childId))
+                        {
+                            siblings.Add(members[childId]);
+                        }
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(person.MotherId)) // por madre
+            {
+                var mother = GetPerson(person.MotherId);
+                if (mother != null)
+                {
+                    foreach (var childId in mother.ChildrenIds)
+                    {
+                        if (childId != personId &&
+                            members.ContainsKey(childId) &&
+                            !siblings.Any(s => s.Id == childId))
+                        {
+                            siblings.Add(members[childId]);
+                        }
+                    }
+                }
+            }
+
+            return siblings;
+        }
+
+        // Obtiene la pareja de una persona
+        public Person GetSpouse(string personId)
+        {
+            if (!members.ContainsKey(personId))
+                return null;
+
+            var person = members[personId];
+
+            if (string.IsNullOrEmpty(person.SpouseId))
+                return null;
+
+            return GetPerson(person.SpouseId);
+        }
+
+        // Establece la relación de matrimonio entre dos personas
+        public bool SetMarriage(string personId1, string personId2)
+        {
+            if (!members.ContainsKey(personId1) || !members.ContainsKey(personId2))
+                return false;
+
+            var person1 = members[personId1];
+            var person2 = members[personId2];
+
+            person1.SpouseId = personId2;
+            person2.SpouseId = personId1;
+
+            return true;
+        }
+
+        public bool RemoveMarriage(string personId) // DIVORCIO 
+        {
+            if (!members.ContainsKey(personId))
+                return false;
+
+            var person = members[personId];
+
+            if (string.IsNullOrEmpty(person.SpouseId))
+                return false;
+
+            if (members.ContainsKey(person.SpouseId))
+            {
+                members[person.SpouseId].SpouseId = null;
+            }
+
+            person.SpouseId = null;
+
+            return true;
+        }
+
+        // abuelos de una persona
+        public List<Person> GetGrandparents(string personId)
+        {
+            var grandparents = new List<Person>();
+            var parents = GetParents(personId);
+
+            foreach (var parent in parents)
+            {
+                grandparents.AddRange(GetParents(parent.Id));
+            }
+
+            return grandparents;
+        }
+
+        // nietos de una persona
+        public List<Person> GetGrandchildren(string personId)
+        {
+            var grandchildren = new List<Person>();
+            var children = GetChildren(personId);
+
+            foreach (var child in children)
+            {
+                grandchildren.AddRange(GetChildren(child.Id));
+            }
+
+            return grandchildren;
+        }
+
+        // tios de una persona
+        public List<Person> GetUnclesAndAunts(string personId)
+        {
+            var uncles = new List<Person>();
+            var parents = GetParents(personId);
+
+            foreach (var parent in parents)
+            {
+                uncles.AddRange(GetSiblings(parent.Id));
+            }
+
+            return uncles.Distinct().ToList();
+        }
+
+        // sobrinos
+        public List<Person> GetNephewsAndNieces(string personId)
+        {
+            var nephews = new List<Person>();
+            var siblings = GetSiblings(personId);
+
+            foreach (var sibling in siblings)
+            {
+                nephews.AddRange(GetChildren(sibling.Id));
+            }
+
+            return nephews;
+        }
+
+        // primos
+        public List<Person> GetCousins(string personId)
+        {
+            var cousins = new List<Person>();
+            var uncles = GetUnclesAndAunts(personId);
+
+            foreach (var uncle in uncles)
+            {
+                cousins.AddRange(GetChildren(uncle.Id));
+            }
+
+            return cousins;
+        }
+
+
         // Obtiene las personas raiz del arbo
         public List<Person> GetRoots()
         {
@@ -171,5 +336,7 @@ namespace FamilyTreeApp.Core.DataStructures // arbol genealogico de una familia
                 DFSHelper(childId, visited, result);
             }
         }
+
+
     }
 }

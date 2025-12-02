@@ -23,6 +23,7 @@ namespace FamilyTreeApp.Core.Models
         public string FatherId { get; set; }
         public string MotherId { get; set; }
         public List<string> ChildrenIds { get; set; }
+        public string SpouseId { get; set; }
 
         public Person()
         {
@@ -30,6 +31,7 @@ namespace FamilyTreeApp.Core.Models
             ChildrenIds = new List<string>();
             IsAlive = true;
             Residence = new GeoCoordinates();
+            SpouseId = null;
         }
         // Calcula edad actual
         public void CalculateAge()
@@ -57,5 +59,6 @@ namespace FamilyTreeApp.Core.Models
             Longitude = longitude;
             Address = address;
         }
+
     }
 }

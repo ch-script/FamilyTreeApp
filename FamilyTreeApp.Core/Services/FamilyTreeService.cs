@@ -140,6 +140,51 @@ namespace FamilyTreeApp.Core.Services
         {
             return familyTree.Count;
         }
+
+        public List<Person> GetSiblings(string personId)
+        {
+            return familyTree.GetSiblings(personId);
+        }
+
+        public Person GetSpouse(string personId)
+        {
+            return familyTree.GetSpouse(personId);
+        }
+
+        public bool SetMarriage(string personId1, string personId2)
+        {
+            return familyTree.SetMarriage(personId1, personId2);
+        }
+
+        public bool RemoveMarriage(string personId)
+        {
+            return familyTree.RemoveMarriage(personId);
+        }
+
+        public List<Person> GetGrandparents(string personId)
+        {
+            return familyTree.GetGrandparents(personId);
+        }
+
+        public List<Person> GetGrandchildren(string personId)
+        {
+            return familyTree.GetGrandchildren(personId);
+        }
+
+        public List<Person> GetUnclesAndAunts(string personId)
+        {
+            return familyTree.GetUnclesAndAunts(personId);
+        }
+
+        public List<Person> GetNephewsAndNieces(string personId)
+        {
+            return familyTree.GetNephewsAndNieces(personId);
+        }
+
+        public List<Person> GetCousins(string personId)
+        {
+            return familyTree.GetCousins(personId);
+        }
     }
 
     public class FamilyStatistics
