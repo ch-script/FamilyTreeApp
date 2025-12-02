@@ -13,6 +13,7 @@ namespace FamilyTreeApp.UI.Forms
         private const int PERSON_HEIGHT = 80;
         private const int HORIZONTAL_SPACING = 50;
         private const int VERTICAL_SPACING = 100;
+        private const int COUPLE_SPACING = 20;
 
         public TreeDiagramForm(FamilyTreeService service)
         {
@@ -40,7 +41,6 @@ namespace FamilyTreeApp.UI.Forms
             };
 
             drawPanel.Paint += DrawPanel_Paint;
-            drawPanel.MouseClick += DrawPanel_MouseClick;
 
             this.Controls.Add(drawPanel);
             this.ResumeLayout(false);
@@ -62,19 +62,66 @@ namespace FamilyTreeApp.UI.Forms
                 return;
             }
 
-            int startX = 500; // Empezar más centrado
+            int startX = 500;
             int startY = 50;
+
+            var processedRoots = new HashSet<string>();
 
             foreach (var root in roots)
             {
-                int width = CalculateSubtreeWidth(root);
-                DrawPersonWithChildren(g, root, startX, startY, width);
+                if (processedRoots.Contains(root.Id))
+                    continue;
+
+                var spouse = familyService.GetSpouse(root.Id);
+
+                int width;
+                if (spouse != null && roots.Any(r => r.Id == spouse.Id))
+                {
+                    width = CalculateCoupleSubtreeWidth(root, spouse);
+                    DrawCoupleWithChildren(g, root, spouse, startX, startY, width);
+                    processedRoots.Add(root.Id);
+                    processedRoots.Add(spouse.Id);
+                }
+                else
+                {
+                    width = CalculateSubtreeWidth(root);
+                    DrawPersonWithChildren(g, root, startX, startY, width);
+                    processedRoots.Add(root.Id);
+                }
+
                 startX += width + HORIZONTAL_SPACING * 2;
             }
         }
 
+        private int CalculateCoupleSubtreeWidth(Person person1, Person person2)
+        {
+            int coupleWidth = PERSON_WIDTH * 2 + COUPLE_SPACING;
+
+            var children = GetCoupleChildren(person1.Id, person2.Id);
+
+            if (children.Count == 0)
+                return coupleWidth;
+
+            int totalChildrenWidth = 0;
+            foreach (var child in children)
+            {
+                totalChildrenWidth += CalculateSubtreeWidth(child);
+            }
+
+            totalChildrenWidth += (children.Count - 1) * HORIZONTAL_SPACING;
+
+            return Math.Max(coupleWidth, totalChildrenWidth);
+        }
+
         private int CalculateSubtreeWidth(Person person)
         {
+            var spouse = familyService.GetSpouse(person.Id);
+
+            if (spouse != null)
+            {
+                return CalculateCoupleSubtreeWidth(person, spouse);
+            }
+
             var children = familyService.GetChildren(person.Id);
 
             if (children.Count == 0)
@@ -86,54 +133,120 @@ namespace FamilyTreeApp.UI.Forms
                 totalChildrenWidth += CalculateSubtreeWidth(child);
             }
 
-            // Agregar espaciado entre hermanos
             totalChildrenWidth += (children.Count - 1) * HORIZONTAL_SPACING;
 
             return Math.Max(PERSON_WIDTH, totalChildrenWidth);
         }
 
-        private void DrawPersonWithChildren(Graphics g, Person person, int centerX, int y, int subtreeWidth)
+        private List<Person> GetCoupleChildren(string personId1, string personId2)
         {
-            // Calcular posición del rectángulo (centrado en el subtree)
-            int rectX = centerX + (subtreeWidth - PERSON_WIDTH) / 2;
-            Rectangle rect = new Rectangle(rectX, y, PERSON_WIDTH, PERSON_HEIGHT);
+            var children1 = familyService.GetChildren(personId1);
+            var children2 = familyService.GetChildren(personId2);
 
-            personRectangles[person.Id] = rect;
+            var allChildren = children1.Union(children2).ToList();
+            return allChildren;
+        }
 
-            // Dibujar la caja de la persona
-            Brush bgBrush = person.IsAlive ? Brushes.LightGreen : Brushes.LightGray;
-            Pen borderPen = new Pen(Color.Black, 2);
+        private void DrawCoupleWithChildren(Graphics g, Person person1, Person person2, int centerX, int y, int subtreeWidth)
+        {
+            int coupleWidth = PERSON_WIDTH * 2 + COUPLE_SPACING;
+            int coupleStartX = centerX + (subtreeWidth - coupleWidth) / 2;
 
-            g.FillRectangle(bgBrush, rect);
-            g.DrawRectangle(borderPen, rect);
+            Rectangle rect1 = new Rectangle(coupleStartX, y, PERSON_WIDTH, PERSON_HEIGHT);
+            DrawPersonBox(g, person1, rect1);
+            personRectangles[person1.Id] = rect1;
 
-            Font nameFont = new Font("Segoe UI", 11, FontStyle.Bold);
-            Font infoFont = new Font("Segoe UI", 9);
+            Rectangle rect2 = new Rectangle(coupleStartX + PERSON_WIDTH + COUPLE_SPACING, y, PERSON_WIDTH, PERSON_HEIGHT);
+            DrawPersonBox(g, person2, rect2);
+            personRectangles[person2.Id] = rect2;
 
-            g.DrawString(person.FullName, nameFont, Brushes.Black, rectX + 10, y + 10);
-            g.DrawString($"{person.Age} años", infoFont, Brushes.DarkGray, rectX + 10, y + 35);
-            g.DrawString(person.IsAlive ? "Vivo" : "Fallecido", infoFont,
-                person.IsAlive ? Brushes.Green : Brushes.Red, rectX + 10, y + 55);
+            Pen marriagePen = new Pen(Color.Red, 3);
+            int lineY = y + PERSON_HEIGHT / 2;
+            g.DrawLine(marriagePen, coupleStartX + PERSON_WIDTH, lineY,
+                coupleStartX + PERSON_WIDTH + COUPLE_SPACING, lineY);
 
-            // Obtener hijos
-            var children = familyService.GetChildren(person.Id);
+            // Deco
+            Font symbolFont = new Font("Segoe UI", 10, FontStyle.Bold);
+            g.DrawString("♥", symbolFont, Brushes.Red,
+                coupleStartX + PERSON_WIDTH + COUPLE_SPACING / 2 - 5, lineY - 10);
+
+            /////////////////
+            var children = GetCoupleChildren(person1.Id, person2.Id);
 
             if (children.Count > 0)
             {
                 int childY = y + PERSON_HEIGHT + VERTICAL_SPACING;
-                int personCenterX = rectX + PERSON_WIDTH / 2;
+                int coupleCenterX = coupleStartX + coupleWidth / 2;
 
-                // Línea vertical desde el padre
+                // Linea vertical desde el centro de la pareja
                 Pen linePen = new Pen(Color.Black, 2);
-                g.DrawLine(linePen, personCenterX, y + PERSON_HEIGHT,
-                    personCenterX, childY - VERTICAL_SPACING / 2);
+                g.DrawLine(linePen, coupleCenterX, y + PERSON_HEIGHT,
+                    coupleCenterX, childY - VERTICAL_SPACING / 2);
 
                 // Calcular posiciones de los hijos
                 int currentX = centerX;
 
                 if (children.Count > 1)
                 {
-                    // Calcular el ancho total de los hijos
+                    int firstChildWidth = CalculateSubtreeWidth(children[0]);
+                    int totalChildrenWidth = 0;
+                    foreach (var child in children)
+                    {
+                        totalChildrenWidth += CalculateSubtreeWidth(child);
+                    }
+                    totalChildrenWidth += (children.Count - 1) * HORIZONTAL_SPACING;
+
+                    int firstChildCenterX = currentX + firstChildWidth / 2;
+                    int lastChildCenterX = currentX + totalChildrenWidth - CalculateSubtreeWidth(children[children.Count - 1]) / 2;
+
+                    // Línea horizontal entre los hijos
+                    g.DrawLine(linePen, firstChildCenterX, childY - VERTICAL_SPACING / 2,
+                        lastChildCenterX, childY - VERTICAL_SPACING / 2);
+                }
+
+                // Dibujar cada hijo
+                foreach (var child in children)
+                {
+                    int childWidth = CalculateSubtreeWidth(child);
+                    int childCenterX = currentX + childWidth / 2;
+
+                    g.DrawLine(linePen, childCenterX, childY - VERTICAL_SPACING / 2,childCenterX, childY);
+
+                    DrawPersonWithChildren(g, child, currentX, childY, childWidth); //recursivo
+
+                    currentX += childWidth + HORIZONTAL_SPACING;
+                }
+            }
+        }
+
+        private void DrawPersonWithChildren(Graphics g, Person person, int centerX, int y, int subtreeWidth)
+        {
+            var spouse = familyService.GetSpouse(person.Id);
+
+            if (spouse != null)
+            {
+                DrawCoupleWithChildren(g, person, spouse, centerX, y, subtreeWidth);
+                return;
+            }
+
+            int rectX = centerX + (subtreeWidth - PERSON_WIDTH) / 2;
+            Rectangle rect = new Rectangle(rectX, y, PERSON_WIDTH, PERSON_HEIGHT);
+
+            personRectangles[person.Id] = rect;
+            DrawPersonBox(g, person, rect);
+
+            var children = familyService.GetChildren(person.Id);
+
+            if (children.Count > 0)
+            {
+                int childY = y + PERSON_HEIGHT + VERTICAL_SPACING;
+                int personCenterX = rectX + PERSON_WIDTH / 2;
+                Pen linePen = new Pen(Color.Black, 2);
+                g.DrawLine(linePen, personCenterX, y + PERSON_HEIGHT,personCenterX, childY - VERTICAL_SPACING / 2);
+                int currentX = centerX;
+
+                if (children.Count > 1)
+                {
                     int firstChildWidth = CalculateSubtreeWidth(children[0]);
                     int lastChildWidth = CalculateSubtreeWidth(children[children.Count - 1]);
 
@@ -147,22 +260,15 @@ namespace FamilyTreeApp.UI.Forms
 
                     int lastChildCenterX = currentX + totalChildrenWidth - lastChildWidth / 2;
 
-                    // Línea horizontal entre los hijos
-                    g.DrawLine(linePen, firstChildCenterX, childY - VERTICAL_SPACING / 2,
-                        lastChildCenterX, childY - VERTICAL_SPACING / 2);
+                    g.DrawLine(linePen, firstChildCenterX, childY - VERTICAL_SPACING / 2,lastChildCenterX, childY - VERTICAL_SPACING / 2); // lineas horizontales entre hijos
                 }
 
-                // Dibujar cada hijo
-                foreach (var child in children)
+                foreach (var child in children) // dibujar cada hijo
                 {
                     int childWidth = CalculateSubtreeWidth(child);
                     int childCenterX = currentX + childWidth / 2;
 
-                    // Línea vertical hacia abajo al hijo
-                    g.DrawLine(linePen, childCenterX, childY - VERTICAL_SPACING / 2,
-                        childCenterX, childY);
-
-                    // Dibujar el hijo recursivamente
+                    g.DrawLine(linePen, childCenterX, childY - VERTICAL_SPACING / 2,childCenterX, childY);
                     DrawPersonWithChildren(g, child, currentX, childY, childWidth);
 
                     currentX += childWidth + HORIZONTAL_SPACING;
@@ -170,37 +276,20 @@ namespace FamilyTreeApp.UI.Forms
             }
         }
 
-        private void DrawPanel_MouseClick(object sender, MouseEventArgs e)
+        private void DrawPersonBox(Graphics g, Person person, Rectangle rect)
         {
-            foreach (var kvp in personRectangles)
-            {
-                if (kvp.Value.Contains(e.Location))
-                {
-                    string personId = kvp.Key;
-                    var person = familyService.GetPerson(personId);
+            Brush bgBrush = person.IsAlive ? Brushes.LightGreen : Brushes.LightGray;
+            Pen borderPen = new Pen(Color.Black, 2);
 
-                    if (person != null)
-                    {
-                        ShowPersonOptions(person);
-                    }
-                    break;
-                }
-            }
-        }
+            g.FillRectangle(bgBrush, rect);
+            g.DrawRectangle(borderPen, rect);
 
-        private void ShowPersonOptions(Person person)
-        {
-            string info = $"¿Deseas cambiar la información de {person.FullName}?";
+            Font nameFont = new Font("Segoe UI", 11, FontStyle.Bold);
+            Font infoFont = new Font("Segoe UI", 9);
 
-            DialogResult result = MessageBox.Show(
-                info, "Opciones", MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-
-            // Aquí puedes agregar la lógica para manejar la respuesta
-            if (result == DialogResult.Yes)
-            {
-                // Abrir formulario de edición
-            }
+            g.DrawString(person.FullName, nameFont, Brushes.Black, rect.X + 10, rect.Y + 10);
+            g.DrawString($"{person.Age} años", infoFont, Brushes.DarkGray, rect.X + 10, rect.Y + 35);
+            g.DrawString(person.IsAlive ? "Vivo" : "Fallecido", infoFont,person.IsAlive ? Brushes.Green : Brushes.Red, rect.X + 10, rect.Y + 55);
         }
     }
 }

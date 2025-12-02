@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
-using WMPLib;
-using FamilyTreeApp.Core.Services;
 using FamilyTreeApp.Core.Models;
-using System.Diagnostics;
+using FamilyTreeApp.Core.Services;
+using WMPLib;
 
 namespace FamilyTreeApp.UI.Forms
 {
@@ -19,6 +21,7 @@ namespace FamilyTreeApp.UI.Forms
         private Button btnStatistics;
         private Button btnViewTree;
         private ListBox lstMembers;
+        private ContextMenuStrip contextMenu; // sale de lstmembers
         private Panel pnlDetails;
         private Label lblMemberCount;
         public MainForm()
@@ -153,6 +156,25 @@ namespace FamilyTreeApp.UI.Forms
                 Font = new Font("Segoe UI", 9)
             };
             lstMembers.SelectedIndexChanged += LstMembers_SelectedIndexChanged;
+            lstMembers.MouseDown += LstMembers_MouseDown;
+
+            contextMenu = new ContextMenuStrip();
+
+            ToolStripMenuItem editMenuItem = new ToolStripMenuItem("Editar información");
+            editMenuItem.Click += EditMenuItem_Click;
+
+            ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("Eliminar persona");
+            deleteMenuItem.Click += DeleteMenuItem_Click;
+
+            ToolStripMenuItem relationsMenuItem = new ToolStripMenuItem("Ver relaciones");
+            relationsMenuItem.Click += RelationsMenuItem_Click;
+
+            contextMenu.Items.Add(editMenuItem);
+            contextMenu.Items.Add(deleteMenuItem);
+            contextMenu.Items.Add(new ToolStripSeparator());
+            contextMenu.Items.Add(relationsMenuItem);
+
+            ///////////////////////////////////////////////
 
             // panel detalles
             pnlDetails = new Panel
@@ -259,6 +281,125 @@ namespace FamilyTreeApp.UI.Forms
 
             var selectedPerson = members[lstMembers.SelectedIndex];
             ShowPersonDetails(selectedPerson);
+        }
+
+        private void LstMembers_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                // Seleccionar el item bajo el cursor
+                int index = lstMembers.IndexFromPoint(e.Location);
+                if (index != ListBox.NoMatches)
+                {
+                    lstMembers.SelectedIndex = index;
+                    contextMenu.Show(lstMembers, e.Location);
+                }
+            }
+        }
+
+        private void EditMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstMembers.SelectedIndex < 0)
+                return;
+
+            var members = familyService.GetAllMembers();
+            var selectedPerson = members[lstMembers.SelectedIndex];
+
+            var editForm = new EditPersonForm(familyService, selectedPerson);
+            if (editForm.ShowDialog() == DialogResult.OK)
+            {
+                UpdateMemberList();
+            }
+        }
+
+        private void DeleteMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstMembers.SelectedIndex < 0)
+                return;
+
+            var members = familyService.GetAllMembers();
+            var selectedPerson = members[lstMembers.SelectedIndex];
+
+            DialogResult result = MessageBox.Show(
+                $"¿Está seguro de que desea eliminar a {selectedPerson.FullName}?\n\n" +
+                "Esta acción no se puede deshacer.",
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                if (familyService.RemovePerson(selectedPerson.Id))
+                {
+                    MessageBox.Show("Persona eliminada exitosamente.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    UpdateMemberList();
+                }
+                else
+                {
+                    MessageBox.Show("Error al eliminar la persona.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void RelationsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lstMembers.SelectedIndex < 0)
+                return;
+
+            var members = familyService.GetAllMembers();
+            var person = members[lstMembers.SelectedIndex];
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"Relaciones de {person.FullName}:\n");
+
+            // Pareja
+            var spouse = familyService.GetSpouse(person.Id);
+            sb.AppendLine($"Pareja: {spouse?.FullName ?? "Ninguna"}\n");
+
+            // Padres
+            var parents = familyService.GetParents(person.Id);
+            if (parents.Count > 0)
+                sb.AppendLine($"Padres: {string.Join(", ", parents.Select(p => p.FullName))}");
+
+            // Hermanos
+            var siblings = familyService.GetSiblings(person.Id);
+            if (siblings.Count > 0)
+                sb.AppendLine($"Hermanos: {string.Join(", ", siblings.Select(p => p.FullName))}");
+
+            // Hijos
+            var children = familyService.GetChildren(person.Id);
+            if (children.Count > 0)
+                sb.AppendLine($"Hijos: {string.Join(", ", children.Select(p => p.FullName))}");
+
+            // Abuelos
+            var grandparents = familyService.GetGrandparents(person.Id);
+            if (grandparents.Count > 0)
+                sb.AppendLine($"Abuelos: {string.Join(", ", grandparents.Select(p => p.FullName))}");
+
+            // Nietos
+            var grandchildren = familyService.GetGrandchildren(person.Id);
+            if (grandchildren.Count > 0)
+                sb.AppendLine($"Nietos: {string.Join(", ", grandchildren.Select(p => p.FullName))}");
+
+            // Tíos
+            var uncles = familyService.GetUnclesAndAunts(person.Id);
+            if (uncles.Count > 0)
+                sb.AppendLine($"Tíos: {string.Join(", ", uncles.Select(p => p.FullName))}");
+
+            // Sobrinos
+            var nephews = familyService.GetNephewsAndNieces(person.Id);
+            if (nephews.Count > 0)
+                sb.AppendLine($"Sobrinos: {string.Join(", ", nephews.Select(p => p.FullName))}");
+
+            // Primos
+            var cousins = familyService.GetCousins(person.Id);
+            if (cousins.Count > 0)
+                sb.AppendLine($"Primos: {string.Join(", ", cousins.Select(p => p.FullName))}");
+
+            MessageBox.Show(sb.ToString(), "Relaciones familiares",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // detalles d pj especifica
